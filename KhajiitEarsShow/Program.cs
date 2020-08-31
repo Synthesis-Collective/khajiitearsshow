@@ -34,9 +34,15 @@ namespace KhajiitEarsShow
             {
                 if (!armorAddon.Race.FormKey.Equals(khajiitKey)) continue;
 
-                if (!armorAddon.BodyTemplate.FirstPersonFlags.HasFlag(BipedObjectFlag.Ears)) continue;
+                if (armorAddon.BodyTemplate == null || !armorAddon.BodyTemplate.FirstPersonFlags.HasFlag(BipedObjectFlag.Ears)) continue;
 
                 var modifiedArmorAddon = state.PatchMod.ArmorAddons.GetOrAddAsOverride(armorAddon);
+
+                if (modifiedArmorAddon.BodyTemplate == null)
+                {
+                    modifiedArmorAddon.BodyTemplate = new BodyTemplate();
+                }
+
                 modifiedArmorAddon.BodyTemplate.FirstPersonFlags &= ~BipedObjectFlag.Ears;
             }
         }
