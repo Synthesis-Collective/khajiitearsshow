@@ -5,6 +5,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Skyrim;
 using Noggog;
+using Mutagen.Bethesda.FormKeys.SkyrimSE;
 
 namespace KhajiitEarsShow
 {
@@ -28,11 +29,9 @@ namespace KhajiitEarsShow
 
         public static void RunPatch(SynthesisState<ISkyrimMod, ISkyrimModGetter> state)
         {
-            FormKey khajiitKey = new FormKey("Skyrim.esm", 0x013745);
-
             foreach (var armorAddon in state.LoadOrder.PriorityOrder.WinningOverrides<IArmorAddonGetter>())
             {
-                if (!armorAddon.Race.FormKey.Equals(khajiitKey)) continue;
+                if (!armorAddon.Race.FormKey.Equals(Skyrim.Race.KhajiitRace)) continue;
 
                 if (armorAddon.BodyTemplate == null || !armorAddon.BodyTemplate.FirstPersonFlags.HasFlag(BipedObjectFlag.Ears)) continue;
 
