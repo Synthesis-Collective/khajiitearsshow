@@ -31,18 +31,25 @@ namespace KhajiitEarsShow
         {
             foreach (var armorAddon in state.LoadOrder.PriorityOrder.WinningOverrides<IArmorAddonGetter>())
             {
-                if (!armorAddon.Race.FormKey.Equals(Skyrim.Race.KhajiitRace)) continue;
-
-                if (armorAddon.BodyTemplate == null || !armorAddon.BodyTemplate.FirstPersonFlags.HasFlag(BipedObjectFlag.Ears)) continue;
-
-                var modifiedArmorAddon = state.PatchMod.ArmorAddons.GetOrAddAsOverride(armorAddon);
-
-                if (modifiedArmorAddon.BodyTemplate == null)
+                try
                 {
-                    modifiedArmorAddon.BodyTemplate = new BodyTemplate();
-                }
+                    if (!armorAddon.Race.FormKey.Equals(Skyrim.Race.KhajiitRace)) continue;
 
-                modifiedArmorAddon.BodyTemplate.FirstPersonFlags &= ~BipedObjectFlag.Ears;
+                    if (armorAddon.BodyTemplate == null || !armorAddon.BodyTemplate.FirstPersonFlags.HasFlag(BipedObjectFlag.Ears)) continue;
+
+                    var modifiedArmorAddon = state.PatchMod.ArmorAddons.GetOrAddAsOverride(armorAddon);
+
+                    if (modifiedArmorAddon.BodyTemplate == null)
+                    {
+                        modifiedArmorAddon.BodyTemplate = new BodyTemplate();
+                    }
+
+                    modifiedArmorAddon.BodyTemplate.FirstPersonFlags &= ~BipedObjectFlag.Ears;
+                }
+                catch (Exception ex)
+                {
+                    throw RecordException.Factory(ex, armorAddon);
+                }
             }
         }
     }
