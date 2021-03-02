@@ -6,30 +6,30 @@ using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Skyrim;
 using Noggog;
 using Mutagen.Bethesda.FormKeys.SkyrimSE;
+using System.Threading.Tasks;
 
 namespace KhajiitEarsShow
 {
     public class Program
     {
-        public static int Main(string[] args)
+        public static Task<int> Main(string[] args)
         {
-            return SynthesisPipeline.Instance.Patch<ISkyrimMod, ISkyrimModGetter>(
-                args: args,
-                patcher: RunPatch,
-                new UserPreferences()
+            return SynthesisPipeline.Instance
+                .AddPatch<ISkyrimMod, ISkyrimModGetter>(RunPatch)
+                .Run(args, new RunPreferences()
                 {
                     ActionsForEmptyArgs = new RunDefaultPatcher()
                     {
                         IdentifyingModKey = "KhajiitEarsShow.esp",
-                        TargetRelease = GameRelease.SkyrimSE
+                        TargetRelease = GameRelease.SkyrimSE,
+                        BlockAutomaticExit = false,
                     }
-                }
-            );
+                });
         }
 
-        public static void RunPatch(SynthesisState<ISkyrimMod, ISkyrimModGetter> state)
+        public static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
         {
-            foreach (var armorAddon in state.LoadOrder.PriorityOrder.WinningOverrides<IArmorAddonGetter>())
+            foreach (var armorAddon in state.LoadOrder.PriorityOrder.ArmorAddon().WinningOverrides())
             {
                 try
                 {
