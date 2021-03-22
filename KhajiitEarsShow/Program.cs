@@ -16,15 +16,8 @@ namespace KhajiitEarsShow
         {
             return SynthesisPipeline.Instance
                 .AddPatch<ISkyrimMod, ISkyrimModGetter>(RunPatch)
-                .Run(args, new RunPreferences()
-                {
-                    ActionsForEmptyArgs = new RunDefaultPatcher()
-                    {
-                        IdentifyingModKey = "KhajiitEarsShow.esp",
-                        TargetRelease = GameRelease.SkyrimSE,
-                        BlockAutomaticExit = false,
-                    }
-                });
+                .SetTypicalOpen(GameRelease.SkyrimSE, "KhajiitEarsShow.esp")
+                .Run(args);
         }
 
         public static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
@@ -33,17 +26,13 @@ namespace KhajiitEarsShow
             {
                 try
                 {
-                    if (!armorAddon.Race.FormKey.Equals(Skyrim.Race.KhajiitRace)) continue;
+                    if (!armorAddon.Race.Equals(Skyrim.Race.KhajiitRace)) continue;
 
                     if (armorAddon.BodyTemplate == null || !armorAddon.BodyTemplate.FirstPersonFlags.HasFlag(BipedObjectFlag.Ears)) continue;
 
                     var modifiedArmorAddon = state.PatchMod.ArmorAddons.GetOrAddAsOverride(armorAddon);
 
-                    if (modifiedArmorAddon.BodyTemplate == null)
-                    {
-                        modifiedArmorAddon.BodyTemplate = new BodyTemplate();
-                    }
-
+                    modifiedArmorAddon.BodyTemplate ??= new BodyTemplate();
                     modifiedArmorAddon.BodyTemplate.FirstPersonFlags &= ~BipedObjectFlag.Ears;
                 }
                 catch (Exception ex)
